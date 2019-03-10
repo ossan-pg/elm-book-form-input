@@ -84,5 +84,5 @@ viewMemo : Int -> String -> Html Msg
 viewMemo index memo =
     li []
         [ button [ onClick <| Delete index ] [ text "削除" ]
-        , text (" " ++ memo) -- 削除ボタンのメモの間の間隔はサボって空白にした
+        , text (" " ++ memo) -- 削除ボタンとメモの間の間隔はサボって空白にした
         ]
