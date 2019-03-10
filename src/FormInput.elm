@@ -64,8 +64,8 @@ view model =
             , button
                 [ disabled (String.isEmpty <| String.trim model.input) ]
                 [ text "Submit" ]
-            , ul [] (List.map viewMemo model.memos)
             ]
+        , ul [] (List.map viewMemo model.memos)
         ]
 
 
