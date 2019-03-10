@@ -37,9 +37,9 @@ init =
 
 
 type Msg
-    = Input String
-    | Submit
-    | Delete Int
+    = Input String -- テキストフィールドの入力
+    | Submit -- メモの追加
+    | Delete Int -- メモの削除
 
 
 update : Msg -> Model -> Model
@@ -56,7 +56,7 @@ update msg model =
                 , memos = model.input :: model.memos
             }
 
-        --
+        -- 削除ボタンが押されたメモ(indexで指定)を削除する
         Delete index ->
             let
                 newMemos =
@@ -84,5 +84,5 @@ viewMemo : Int -> String -> Html Msg
 viewMemo index memo =
     li []
         [ button [ onClick <| Delete index ] [ text "削除" ]
-        , text (" " ++ memo)
+        , text (" " ++ memo) -- 削除ボタンのメモの間の間隔はサボって空白にした
         ]
