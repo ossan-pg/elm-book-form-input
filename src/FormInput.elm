@@ -39,6 +39,7 @@ init =
 type Msg
     = Input String
     | Submit
+    | Delete Int
 
 
 update : Msg -> Model -> Model
@@ -55,6 +56,16 @@ update msg model =
                 , memos = model.input :: model.memos
             }
 
+        --
+        Delete index ->
+            let
+                newMemos =
+                    List.indexedMap Tuple.pair model.memos
+                        |> List.filter (\memo -> Tuple.first memo /= index)
+                        |> List.map Tuple.second
+            in
+            { model | memos = newMemos }
+
 
 view : Model -> Html Msg
 view model =
@@ -65,10 +76,13 @@ view model =
                 [ disabled (String.isEmpty <| String.trim model.input) ]
                 [ text "Submit" ]
             ]
-        , ul [] (List.map viewMemo model.memos)
+        , ul [] (List.indexedMap viewMemo model.memos)
         ]
 
 
-viewMemo : String -> Html Msg
-viewMemo memo =
-    li [] [ text memo ]
+viewMemo : Int -> String -> Html Msg
+viewMemo index memo =
+    li []
+        [ button [ onClick <| Delete index ] [ text "削除" ]
+        , text (" " ++ memo)
+        ]
