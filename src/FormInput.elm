@@ -4,6 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Set exposing (Set)
 
 
 main : Program () Model Msg
@@ -22,6 +23,7 @@ main =
 type alias Model =
     { input : String
     , memos : List String
+    , checked : Set Int
     }
 
 
@@ -29,6 +31,7 @@ init : Model
 init =
     { input = ""
     , memos = []
+    , checked = Set.empty
     }
 
 
@@ -39,6 +42,8 @@ init =
 type Msg
     = Input String
     | Submit
+    | Check Int Bool
+    | Delete
 
 
 update : Msg -> Model -> Model
@@ -55,6 +60,23 @@ update msg model =
                 , memos = model.input :: model.memos
             }
 
+        -- チェックされたメモを削除対象に追加、チェックの外されたメモを削除対象から削除する
+        Check index checked ->
+            if checked then
+                { model | checked = Set.insert index model.checked }
+            else
+                { model | checked = Set.remove index model.checked }
+
+        -- チェックされたメモを削除する
+        Delete ->
+            let
+                newMemos = List.indexedMap Tuple.pair model.memos
+                    |> List.filter (\pair -> Set.member (Tuple.first pair) model.checked |> not)
+                    |> List.map Tuple.second
+            in
+            { model | memos = newMemos, checked = Set.empty }
+
+
 
 view : Model -> Html Msg
 view model =
@@ -62,13 +84,16 @@ view model =
         [ Html.form [ onSubmit Submit ]
             [ input [ value model.input, onInput Input ] []
             , button
-                [ disabled (String.isEmpty <| String.trim model.input) ]
+                [ disabled <| String.isEmpty <| String.trim model.input ]
                 [ text "Submit" ]
             ]
-        , ul [] (List.map viewMemo model.memos)
+        , button
+            [ disabled <| Set.isEmpty model.checked, onClick Delete ]
+            [ text "Delete" ]
+        , ul [] (List.indexedMap viewMemo model.memos)
         ]
 
 
-viewMemo : String -> Html Msg
-viewMemo memo =
-    li [] [ text memo ]
+viewMemo : Int -> String -> Html Msg
+viewMemo index memo =
+    li [] [ input [ type_ "checkbox", onCheck <| Check index ] [] , text memo ]
