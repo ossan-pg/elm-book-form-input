@@ -30,7 +30,7 @@ type alias Model =
 init : Model
 init =
     { input = ""
-    , memos = []
+    , memos = [ "メモ1", "メモ2", "メモ3", "メモ4", "メモ5" ]
     , checked = Set.empty
     }
 
