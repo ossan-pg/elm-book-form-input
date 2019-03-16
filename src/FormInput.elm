@@ -91,10 +91,19 @@ view model =
         , button
             [ disabled <| Set.isEmpty model.checked, onClick Delete ]
             [ text "Delete" ]
-        , ul [] (List.indexedMap viewMemo model.memos)
+        , ul [] (viewMemo model)
         ]
 
 
-viewMemo : Int -> String -> Html Msg
-viewMemo index memo =
-    li [] [ input [ type_ "checkbox", onCheck <| Check index ] [], text memo ]
+viewMemo : Model -> List (Html Msg)
+viewMemo model =
+    let
+        checkedMemos =
+            List.indexedMap (\index memo -> ( Set.member index model.checked, memo )) model.memos
+    in
+    List.indexedMap viewMemoHelp checkedMemos
+
+
+viewMemoHelp : Int -> ( Bool, String ) -> Html Msg
+viewMemoHelp index ( checked_, memo ) =
+    li [] [ input [ type_ "checkbox", onCheck <| Check index, checked checked_ ] [], text memo ]
